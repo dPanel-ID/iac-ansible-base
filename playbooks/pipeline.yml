@@ -1,0 +1,8 @@
+---
+- hosts: all
+  become: true
+  roles:
+    - role: dpanel-git
+    - role: dpanel-build
+    - role: dpanel-deploy
+    - role: robertdebock.logrotate

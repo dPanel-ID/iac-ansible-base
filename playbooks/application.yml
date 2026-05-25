@@ -1,0 +1,26 @@
+---
+- hosts: all
+  become: true
+
+  tasks:
+  - name: Check if app folder exist
+    ansible.builtin.stat:
+      path: "{{ application_directory }}"
+    register: appdir
+
+  - name: Delete app folder
+    ansible.builtin.file:
+      path: "{{ application_directory }}"
+      state: absent
+    when: appdir.stat.exists
+
+  - name: Check if log app folder exist
+    ansible.builtin.stat:
+      path: "{{ application_log_directory }}"
+    register: logdir
+
+  - name: Delete log app folder
+    ansible.builtin.file:
+      path: "{{ application_log_directory }}"
+      state: absent
+    when: logdir.stat.exists
