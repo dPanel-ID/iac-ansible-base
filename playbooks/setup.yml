@@ -1,0 +1,17 @@
+---
+- name: dPanel standard VM setup
+  hosts: all
+  become: true
+  gather_facts: true
+
+  roles:
+    - role: robertdebock.users
+      tags:
+        - user
+        - setup
+
+    - role: dpanel-init
+      tags:
+        - dpanel
+        - agent
+        - setup

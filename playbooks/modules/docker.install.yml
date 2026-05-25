@@ -1,0 +1,14 @@
+---
+- name: Install Docker
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    app_config: "{{ config | default({}) }}"
+
+  roles:
+    - role: githubixx.docker
+      docker_users: "{{ dynamic.docker.users | default(app_config.users | default([])) }}"
+      tags:
+        - docker
+

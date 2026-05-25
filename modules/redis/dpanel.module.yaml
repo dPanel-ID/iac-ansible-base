@@ -1,0 +1,43 @@
+version: 1
+kind: dpanel-module
+
+name: redis
+title: Redis
+description: Install Redis.
+category: database
+platforms:
+  - vm
+icon: redis
+
+source:
+  backend: ansible
+  roles:
+    - geerlingguy.redis
+  defaults:
+    - ansible/roles/geerlingguy.redis/defaults/main.yml
+
+supported_os:
+  ubuntu:
+    - "22.04"
+    - "24.04"
+  debian:
+    - "12"
+
+actions:
+  install:
+    title: Install Redis
+    playbook: playbooks/modules/redis.install.yml
+    risk: normal
+
+inputs:
+  - name: port
+    label: Redis Port
+    description: TCP port used by Redis.
+    type: number
+    required: true
+    default: 6379
+    min: 1
+    max: 65535
+    maps_to: redis_port
+    scope: host
+

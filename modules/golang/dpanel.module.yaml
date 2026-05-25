@@ -1,0 +1,41 @@
+version: 1
+kind: dpanel-module
+
+name: golang
+title: Go
+description: Install the Go toolchain.
+category: language
+platforms:
+  - vm
+icon: golang
+
+source:
+  backend: ansible
+  roles:
+    - gantsign.golang
+  defaults:
+    - ansible/roles/gantsign.golang/defaults/main.yml
+
+supported_os:
+  ubuntu:
+    - "22.04"
+    - "24.04"
+  debian:
+    - "12"
+
+actions:
+  install:
+    title: Install Go
+    playbook: playbooks/modules/golang.install.yml
+    risk: normal
+
+inputs:
+  - name: version
+    label: Go Version
+    description: Go version to install.
+    type: string
+    required: true
+    default: "1.22.5"
+    maps_to: golang_version
+    scope: host
+

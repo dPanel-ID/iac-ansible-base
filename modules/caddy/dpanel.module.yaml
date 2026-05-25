@@ -1,0 +1,33 @@
+version: 1
+kind: dpanel-module
+
+name: caddy
+title: Caddy
+description: Install the Caddy web server.
+category: web-server
+platforms:
+  - vm
+icon: caddy
+
+source:
+  backend: ansible
+  roles:
+    - caddy_ansible.caddy_ansible
+  defaults:
+    - ansible/roles/caddy_ansible.caddy_ansible/defaults/main.yml
+
+supported_os:
+  ubuntu:
+    - "22.04"
+    - "24.04"
+  debian:
+    - "12"
+
+actions:
+  install:
+    title: Install Caddy
+    playbook: playbooks/modules/caddy.install.yml
+    risk: normal
+
+inputs: []
+

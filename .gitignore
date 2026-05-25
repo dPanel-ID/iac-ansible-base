@@ -1,0 +1,39 @@
+# Local environment and secrets
+.env
+.env.*
+*.pem
+*.key
+*.pub
+*.p12
+*.pfx
+*.crt
+*.csr
+*.kubeconfig
+.vault_pass*
+vault/
+ssh-key/
+known_hosts
+
+# Generated Ansible runtime files
+.ansible/
+*.retry
+tmp/
+logs/
+artifacts/
+setup-machine-*-variable.json
+setup-service-*-variable.json
+credential-*
+temporary-inventory-*.json
+
+# Generated workspace inventory
+inventory/personal-*/
+inventory/organization-*/
+!inventory/templates/
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+

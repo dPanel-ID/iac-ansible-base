@@ -1,0 +1,14 @@
+---
+- name: Install Go
+  hosts: all
+  become: true
+  gather_facts: true
+  vars:
+    app_config: "{{ config | default({}) }}"
+
+  roles:
+    - role: gantsign.golang
+      golang_version: "{{ dynamic.golang.version | default(app_config.version | default('1.22.5')) }}"
+      tags:
+        - golang
+
