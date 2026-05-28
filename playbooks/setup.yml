@@ -6,6 +6,7 @@
 
   roles:
     - role: robertdebock.users
+      when: (dpanel_setup_action | default('machine.create')) != 'machine.delete'
       tags:
         - user
         - setup
