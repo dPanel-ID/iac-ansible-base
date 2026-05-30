@@ -46,6 +46,7 @@ docs/
 
 - `playbooks/setup.yml` for the standard dPanel VM bootstrap.
 - `playbooks/build.yml` for build artifact preparation.
+- `playbooks/cloud.yml` for cloud provider operations.
 - `playbooks/deploy.yml` for artifact deployment.
 - `playbooks/pipeline.yml` for the full build and deploy pipeline.
 - `playbooks/router.yml` for load balancer or router management.

@@ -1,0 +1,13 @@
+---
+- name: "Cloud Provider Operation"
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  become: false
+  roles:
+    - role: dpanel.cloud-provider
+  tasks:
+    - name: cloud-provider-output
+      ansible.builtin.debug:
+        msg: "{{ {'output_vm': output_vm | default({}), 'output_idcloudhost_vm': output_idcloudhost_vm | default({})} | to_json }}"
+      when: with_output | default(false)
