@@ -1,23 +1,40 @@
 # dPanel Ansible IaC Base
 
-Public Ansible template for dPanel personal and organization workspace IaC
-repositories.
+Public Ansible base for the dPanel shared free-tier IaC repository and future
+custom workspace IaC repositories.
 
-dPanel creates managed workspace repositories from this template, for example:
+dPanel free-tier workspaces use one shared Ansible IaC repository by default:
 
 ```text
-dpanel-iac-personal-<USER-ID>
-dpanel-iac-organization-<ORG-ID>
+dPanel-ID/dpanel-iac-ansible-shared
 ```
 
-This repository intentionally contains only the workspace playbook and inventory
-structure. The module catalog and reusable Ansible roles are resolved from
+Workspace-specific generated playbooks are written inside that repository under
+workspace folders:
+
+```text
+playbooks/team-<WORKSPACE-ID>/
+playbooks/personal-<USER-ID>/
+```
+
+Reusable generated module installers are written once under:
+
+```text
+playbooks/modules/
+```
+
+Future paid/custom workspaces may migrate to their own IaC repository, but the
+runtime structure remains the same so development and production execution are
+repeatable. The module catalog and reusable Ansible roles are resolved from
 [`dPanel-ID/iac-modules`](https://github.com/dPanel-ID/iac-modules).
 
 ## Repository Contract
 
 ```text
 playbooks/
+playbooks/modules/
+playbooks/team-<WORKSPACE-ID>/
+playbooks/personal-<USER-ID>/
 inventory/
 requirements.yml
 ansible.cfg
@@ -32,6 +49,11 @@ docs/
 - `playbooks/deploy.yml` for artifact deployment.
 - `playbooks/pipeline.yml` for the full build and deploy pipeline.
 - `playbooks/router.yml` for load balancer or router management.
+- `playbooks/modules/` for generated reusable module installers such as
+  `install-php.yml`, `install-caddyserver.yml`, and `install-postgresql.yml`.
+- `playbooks/team-<WORKSPACE-ID>/` and `playbooks/personal-<USER-ID>/` for
+  generated application, load balancer, and workspace-specific wrapper
+  playbooks.
 - `inventory/templates/*` as safe example inventory structure.
 - `requirements.yml` for collections required by template validation.
 - Validation scripts used by CI and local checks.
@@ -40,7 +62,6 @@ docs/
 
 - Module manifests such as `dpanel.module.yaml`.
 - Module alias overlays.
-- `modules/` or `playbooks/modules/`.
 - Vendored reusable Ansible roles.
 - Real inventory, machine addresses, users, tokens, or secrets.
 
@@ -55,30 +76,45 @@ from `dPanel-ID/iac-modules/ansible/requirements.yml` by the dPanel executor.
 
 ## Runtime Flow
 
-1. dPanel Manager prepares or selects a workspace IaC repository created from
-   this template.
+1. dPanel Manager prepares or selects the configured IaC repository. Free-tier
+   workspaces use `dPanel-ID/dpanel-iac-ansible-shared`.
 2. dPanel Manager reads available modules from `dPanel-ID/iac-modules`.
-3. For module installation, dPanel Manager generates a playbook under the
-   workspace repository:
+3. For module installation, dPanel Manager generates or refreshes a reusable
+   installer under:
 
    ```text
-   playbooks/generated/<name>.yml
+   playbooks/modules/install-<module>.yml
    ```
 
-4. dPanel Executor checks out the workspace repository at the selected ref.
-5. dPanel Executor checks out `dPanel-ID/iac-modules` at the configured module
+4. Application and load balancer wrappers are generated under the selected
+   workspace path, for example:
+
+   ```text
+   playbooks/team-8554868821807937310/application-448-pipeline.yml
+   playbooks/team-8554868821807937310/load-balancer-360.yml
+   ```
+
+5. dPanel Executor checks out the workspace repository at the selected ref.
+6. dPanel Executor checks out `dPanel-ID/iac-modules` at the configured module
    source ref.
-6. dPanel Executor installs module role dependencies from:
+7. dPanel Executor installs module role dependencies from:
 
    ```text
    dPanel-ID/iac-modules/ansible/requirements.yml
    ```
 
-7. dPanel Executor runs the selected playbook with runtime variables, inventory,
+8. dPanel Executor runs the selected playbook with runtime variables, inventory,
    credentials, and extra-vars supplied by dPanel.
 
-Generated playbooks are part of each workspace repository so other executors or
-future GitHub Actions runners can execute the same desired state.
+Generated playbooks are part of the configured IaC repository so other executors
+or future GitHub Actions runners can execute the same desired state.
+
+## Concurrency
+
+Many organizations can write to the shared repository, so Manager must serialize
+repository mutations. dPanel uses workspace-level executor leases and
+repository-level write locks before it commits generated playbooks or inventory.
+This avoids Git conflicts when many public or dedicated workers are running.
 
 ## Branch, Tag, And Commit Safety
 
